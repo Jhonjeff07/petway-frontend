@@ -45,7 +45,7 @@ nav.navbar {
 }
 
 .nav-logo {
-  height: 35px;
+  height: 65px;
   width: auto;
   display: block;
 }
@@ -99,11 +99,21 @@ nav.navbar {
 /* Footer */
 footer {
   background: #0077b6;
-  color: #fff;
+  color: #fff !important;
+  /* Forzamos color blanco */
   text-align: center;
   padding: 10px;
   font-size: 0.9rem;
   width: 100%;
+  font-weight: bold !important;
+  /* Forzamos negrita */
+}
+
+/* Texto específico del copyright */
+footer p,
+footer div {
+  color: #fff !important;
+  font-weight: bold !important;
 }
 
 /* ====== TARJETAS UNIFICADAS ====== */
@@ -310,5 +320,87 @@ form textarea {
 
   .home-title {
     font-size: 1.2rem;
+  }
+}
+
+/* ... (código existente) ... */
+
+/* Títulos centrados para formularios */
+.form-page-title {
+  text-align: center;
+  color: #023e8a;
+  margin-bottom: 18px;
+}
+
+/* Contenedor para páginas de formulario */
+.form-page-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Mensajes de error centrados */
+.error-message {
+  text-align: center;
+  margin: 0 auto 15px;
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+/* Estilos para la página de detalle de mascota */
+.detalle-mascota-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.detalle-mascota-img {
+  max-width: 100%;
+  max-height: 500px;
+  height: auto;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  object-fit: contain;
+}
+
+.detalle-mascota-info {
+  background: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
+}
+
+.detalle-mascota-info p {
+  margin: 10px 0;
+  font-size: 1.1rem;
+}
+
+.detalle-mascota-info strong {
+  color: #023e8a;
+  min-width: 120px;
+  display: inline-block;
+}
+
+/* Para dispositivos medianos */
+@media (min-width: 768px) {
+  .detalle-mascota-container {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 30px;
+  }
+
+  .detalle-mascota-img {
+    max-width: 50%;
+    flex: 1;
+  }
+
+  .detalle-mascota-info {
+    flex: 1;
+    max-width: none;
   }
 }

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { guardarUsuario, eliminarUsuario } from "../services/auth"; // 🆕 Importar funciones de usuario
 
 function Navbar({ setIsAuth }) {
   const navigate = useNavigate();
@@ -8,6 +9,8 @@ function Navbar({ setIsAuth }) {
 
   const handleLogout = () => {
     localStorage.removeItem("auth");
+    localStorage.removeItem("token");
+    eliminarUsuario(); // 🆕 Eliminar usuario al cerrar sesión
     setIsAuth(false);
     navigate("/");
   };

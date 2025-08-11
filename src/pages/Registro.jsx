@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { registrarUsuario } from "../services/api";
+import "../App.css";
 
 function Registro() {
   const navigate = useNavigate();
@@ -30,8 +31,8 @@ function Registro() {
   };
 
   return (
-    <div className="home-container">
-      <h1>📝 Registro</h1>
+    <div className="form-page-container">
+      <h1 className="form-page-title">📝 Registro</h1>
       <form onSubmit={handleSubmit}>
         <input
           type="text"

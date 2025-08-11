@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUsuario } from "../services/api";
+import { guardarUsuario } from "../services/auth"; // 🆕 Importar función para guardar usuario
+import "../App.css";
 
 function Login({ setIsAuth }) {
   const navigate = useNavigate();
@@ -48,6 +50,9 @@ function Login({ setIsAuth }) {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("auth", "true");
 
+      // 🆕 GUARDAR USUARIO EN LOCALSTORAGE
+      guardarUsuario(res.data.usuario);
+
       // Actualizar estado global
       setIsAuth(true);
 
@@ -63,8 +68,8 @@ function Login({ setIsAuth }) {
   };
 
   return (
-    <div className="home-container">
-      <h1>🔐 Iniciar Sesión</h1>
+    <div className="form-page-container">
+      <h1 className="form-page-title">🔐 Iniciar Sesión</h1>
 
       {/* Mostrar mensaje de error */}
       {error && <div className="error-message">{error}</div>}

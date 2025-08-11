@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { crearMascota } from "../services/api";
+import "../App.css";
 
 function Publicar() {
   const navigate = useNavigate();
@@ -54,8 +55,8 @@ function Publicar() {
   };
 
   return (
-    <div className="home-container">
-      <h1>📢 Publicar Mascota</h1>
+    <div className="form-page-container">
+      <h1 className="form-page-title">📢 Publicar Mascota</h1>
       <p>Completa el formulario para registrar una mascota perdida o encontrada.</p>
 
       <form onSubmit={handleSubmit}>

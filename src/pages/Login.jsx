@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { loginUsuario } from "../services/api";
-import { guardarUsuario } from "../services/auth"; // 🆕 Importar función para guardar usuario
+import { guardarUsuario } from "../services/auth";
 import "../App.css";
 
 function Login({ setIsAuth }) {
@@ -103,24 +103,20 @@ function Login({ setIsAuth }) {
 
       {/* Enlace centrado para recuperar contraseña */}
       <div style={{
-        textAlign: "center", // Esto centra el contenido
+        textAlign: "center",
         marginTop: "15px",
         width: "100%"
       }}>
-        <a
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            alert("Función en desarrollo");
-          }}
+        <Link
+          to="/recuperar-password"
           style={{
             color: "#0077b6",
             textDecoration: "underline",
-            display: "inline-block" // Esto evita que ocupe todo el ancho
+            display: "inline-block"
           }}
         >
           ¿Olvidaste tu contraseña?
-        </a>
+        </Link>
       </div>
     </div>
   );

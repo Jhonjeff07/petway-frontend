@@ -404,3 +404,39 @@ form textarea {
     max-width: none;
   }
 }
+
+.form-group {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.submit-button {
+  background-color: #0077b6;
+  color: white;
+  margin-right: 10px;
+}
+
+.cancel-button {
+  background-color: #6c757d;
+  color: white;
+}
+
+.submit-button:hover {
+  background-color: #023e8a;
+}
+
+.cancel-button:hover {
+  background-color: #495057;
+}
+
+.submit-button:disabled,
+.cancel-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

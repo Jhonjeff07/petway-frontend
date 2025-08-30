@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { guardarUsuario, eliminarUsuario } from "../services/auth"; // 🆕 Importar funciones de usuario
+import { guardarUsuario, eliminarUsuario } from "../services/auth";
 
 function Navbar({ setIsAuth }) {
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ function Navbar({ setIsAuth }) {
   const handleLogout = () => {
     localStorage.removeItem("auth");
     localStorage.removeItem("token");
-    eliminarUsuario(); // 🆕 Eliminar usuario al cerrar sesión
+    eliminarUsuario();
     setIsAuth(false);
     navigate("/");
   };
@@ -18,7 +18,6 @@ function Navbar({ setIsAuth }) {
   return (
     <nav className="navbar">
       <div className="nav-left">
-        {/* IMPORTANTE: coloca Logo.png en la carpeta public (ruta /Logo.png) */}
         <img src="/Logo.png" alt="Logo PetWay" className="nav-logo" />
       </div>
 
@@ -41,6 +40,8 @@ function Navbar({ setIsAuth }) {
         {isAuth ? (
           <>
             <Link to="/publicar" onClick={() => setMenuOpen(false)}>Publicar</Link>
+            {/* Nuevo botón para cambiar contraseña */}
+            <Link to="/cambiar-password" onClick={() => setMenuOpen(false)}>Cambiar Contraseña</Link>
             <button onClick={() => { handleLogout(); setMenuOpen(false); }} className="nav-logout">
               Cerrar Sesión
             </button>

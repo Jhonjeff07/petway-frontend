@@ -58,6 +58,20 @@ function Registro() {
           onChange={handleChange}
           required
         />
+        <select name="preguntaSecreta" required>
+        <option value="">Selecciona una pregunta de seguridad</option>
+        <option value="¿Cuál es el nombre de tu primera mascota?">¿Cuál es el nombre de tu primera mascota?</option>
+        <option value="¿En qué ciudad naciste?">¿En qué ciudad naciste?</option>
+        <option value="¿Cuál es el nombre de tu madre?">¿Cuál es el nombre de tu madre?</option>
+        <option value="¿Cuál es tu comida favorita?">¿Cuál es tu comida favorita?</option>
+        </select>
+
+        <input
+          type="text"
+          name="respuestaSecreta"
+          placeholder="Tu respuesta secreta"
+          required
+        />
         <button type="submit">Registrarse</button>
       </form>
     </div>

@@ -7,15 +7,17 @@ import Login from "./pages/Login";
 import Buscar from "./pages/Buscar";
 import Publicar from "./pages/Publicar";
 import Registro from "./pages/Registro";
-import DetalleMascota from "./pages/DetalleMascota"; // 🆕 Importamos la nueva página
+import DetalleMascota from "./pages/DetalleMascota";
+import RecuperarPassword from "./pages/RecuperarPassword";
+import RestablecerPassword from "./pages/RestablecerPassword";
+import VerificarPregunta from './pages/VerificarPregunta';
+import CambiarPassword from './pages/CambiarPassword'; // Asegúrate de importar el componente
 import "./App.css";
 
 function App() {
-  // Estado global de autenticación
   const [isAuth, setIsAuth] = useState(false);
 
   useEffect(() => {
-    // Revisar localStorage al cargar
     setIsAuth(localStorage.getItem("auth") === "true");
   }, []);
 
@@ -27,12 +29,16 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/buscar" element={<Buscar />} />
           <Route path="/login" element={<Login setIsAuth={setIsAuth} />} />
+          <Route path="/recuperar-password" element={<RecuperarPassword />} />
+          <Route path="/verificar-pregunta" element={<VerificarPregunta />} />
+          <Route path="/restablecer-password/:token" element={<RestablecerPassword />} />
           <Route path="/registro" element={<Registro />} />
+          <Route path="/cambiar-password" element={isAuth ? <CambiarPassword /> : <Navigate to="/login" />} />
           <Route
             path="/publicar"
             element={isAuth ? <Publicar /> : <Navigate to="/login" />}
           />
-          <Route path="/mascota/:id" element={<DetalleMascota />} /> {/* 🆕 Nueva ruta */}
+          <Route path="/mascota/:id" element={<DetalleMascota />} />
         </Routes>
       </div>
       <Footer />
@@ -41,4 +47,3 @@ function App() {
 }
 
 export default App;
-

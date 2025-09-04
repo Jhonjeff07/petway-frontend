@@ -440,3 +440,66 @@ form textarea {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.delete-button {
+  background-color: #e74c3c;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.delete-button:hover {
+  background-color: #c0392b;
+}
+
+
+/* Estilos para el campo de número de contacto */
+input[type="tel"] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  width: 100%;
+}
+
+/* Ajustes responsivos para formularios */
+form input,
+form textarea,
+form input[type="tel"] {
+  padding: 10px;
+  margin-bottom: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  width: 100%;
+}
+
+form input:focus,
+form textarea:focus,
+form input[type="tel"]:focus {
+  outline: none;
+  border-color: #0077b6;
+  box-shadow: 0 0 0 2px rgba(0, 119, 182, 0.2);
+}
+
+/* Estilo para el botón de enviar */
+form button {
+  background-color: #0077b6;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 10px;
+}
+
+form button:hover {
+  background-color: #023e8a;
+}

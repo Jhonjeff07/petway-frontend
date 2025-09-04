@@ -12,6 +12,7 @@ function Publicar() {
     edad: "",
     descripcion: "",
     ciudad: "",
+    numeroContacto: "", // Nuevo campo
     foto: null,
   });
 
@@ -103,6 +104,14 @@ function Publicar() {
           value={formData.ciudad}
           onChange={handleChange}
           required
+        />
+        {/* Nuevo campo para número de contacto */}
+        <input
+          type="tel"
+          name="numeroContacto"
+          placeholder="Número de contacto (opcional)"
+          value={formData.numeroContacto}
+          onChange={handleChange}
         />
         <input
           type="file"

@@ -1,9 +1,6 @@
 import axios from "axios";
 
 // 🔹 Configuración base de Axios
-import axios from "axios";
-
-// 🔹 Configuración base de Axios
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL + "/api", // Usar la variable de entorno
   withCredentials: true,

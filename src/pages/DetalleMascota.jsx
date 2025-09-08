@@ -61,7 +61,7 @@ function DetalleMascota() {
             try {
                 await eliminarMascota(mascota._id);
                 alert("✅ Mascota eliminada correctamente");
-                navigate("/"); // Redirige al inicio
+                navigate("/");
             } catch (error) {
                 console.error("❌ Error eliminando mascota:", error);
                 alert("❌ No se pudo eliminar la mascota");
@@ -78,7 +78,7 @@ function DetalleMascota() {
                     src={
                         mascota.fotoUrl.startsWith("http")
                             ? mascota.fotoUrl
-                            : `http://localhost:4000${mascota.fotoUrl}`
+                            : `${import.meta.env.VITE_API_URL || "https://petway-backend.onrender.com"}${mascota.fotoUrl}`
                     }
                     alt={mascota.nombre}
                     className="detalle-mascota-img"

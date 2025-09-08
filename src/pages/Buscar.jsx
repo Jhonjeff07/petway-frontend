@@ -23,7 +23,6 @@ function Buscar() {
     cargarMascotas();
   }, []);
 
-  // Filtrar mascotas por nombre, tipo, ciudad o estado
   const mascotasFiltradas = mascotas.filter((m) => {
     const searchString = `${m.nombre} ${m.tipo} ${m.ciudad} ${m.estado}`.toLowerCase();
     return searchString.includes(filtro.toLowerCase());
@@ -33,12 +32,10 @@ function Buscar() {
     <div className="buscar-page">
       <h1 className="home-title">🔎 Buscar Mascotas</h1>
 
-      {/* Mensaje centrado */}
       <div className="intro-message">
         <p>Aquí podrás ver y buscar todas las mascotas registradas en la plataforma.</p>
       </div>
 
-      {/* Barra de búsqueda con icono */}
       <div className="search-container">
         <input
           type="text"
@@ -70,7 +67,7 @@ function Buscar() {
                   src={
                     m.fotoUrl.startsWith("http")
                       ? m.fotoUrl
-                      : `http://localhost:4000${m.fotoUrl}`
+                      : `${import.meta.env.VITE_API_URL || "https://petway-backend.onrender.com"}${m.fotoUrl}`
                   }
                   alt={m.nombre}
                   className="mascota-img"

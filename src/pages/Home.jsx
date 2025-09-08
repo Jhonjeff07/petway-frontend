@@ -51,7 +51,7 @@ function Home() {
                   src={
                     m.fotoUrl.startsWith("http")
                       ? m.fotoUrl
-                      : `http://localhost:4000${m.fotoUrl}`
+                      : `${import.meta.env.VITE_API_URL || "https://petway-backend.onrender.com"}${m.fotoUrl}`
                   }
                   alt={m.nombre}
                   className="mascota-img"
@@ -67,7 +67,6 @@ function Home() {
                   <strong>{m.tipo}</strong> - {m.ciudad}
                 </p>
 
-                {/* Estado (igual que en Buscar) */}
                 <p className="mascota-estado">
                   {m.estado === "encontrado" ? (
                     <span className="estado-encontrado">✅ Encontrado</span>
@@ -76,7 +75,6 @@ function Home() {
                   )}
                 </p>
 
-                {/* Fecha de publicación (igual que en Buscar) */}
                 <p className="mascota-fecha">
                   Publicado: {new Date(m.createdAt).toLocaleDateString()}
                 </p>

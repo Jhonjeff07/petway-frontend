@@ -12,7 +12,7 @@ function Publicar() {
     edad: "",
     descripcion: "",
     ciudad: "",
-    numeroContacto: "", // Nuevo campo
+    telefono: "", // Cambiado de numeroContacto a telefono
     foto: null,
   });
 
@@ -32,9 +32,20 @@ function Publicar() {
     try {
       // Preparar datos para enviar (FormData)
       const datos = new FormData();
-      Object.keys(formData).forEach((key) => {
-        datos.append(key, formData[key]);
-      });
+
+      // Añadir todos los campos excepto 'foto' que se maneja por separado
+      datos.append('nombre', formData.nombre);
+      datos.append('tipo', formData.tipo);
+      datos.append('raza', formData.raza);
+      datos.append('edad', formData.edad);
+      datos.append('descripcion', formData.descripcion);
+      datos.append('ciudad', formData.ciudad);
+      datos.append('telefono', formData.telefono); // Cambiado a 'telefono'
+
+      // Añadir la foto si existe
+      if (formData.foto) {
+        datos.append('foto', formData.foto);
+      }
 
       // Obtener token
       const token = localStorage.getItem("token");
@@ -105,12 +116,12 @@ function Publicar() {
           onChange={handleChange}
           required
         />
-        {/* Nuevo campo para número de contacto */}
+        {/* Campo actualizado a telefono */}
         <input
           type="tel"
-          name="numeroContacto"
+          name="telefono"
           placeholder="Número de contacto (opcional)"
-          value={formData.numeroContacto}
+          value={formData.telefono}
           onChange={handleChange}
         />
         <input

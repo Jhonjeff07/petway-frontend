@@ -56,9 +56,11 @@ function Home() {
                   alt={m.nombre}
                   className="mascota-img"
                   onError={(e) => {
+                    console.log("Error cargando imagen:", e.target.src);
                     e.target.onerror = null;
                     e.target.src = "/placeholder.jpg";
                   }}
+                  onLoad={() => console.log("Imagen cargada correctamente")}
                 />
               )}
               <div className="mascota-info">

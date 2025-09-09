@@ -83,9 +83,11 @@ function DetalleMascota() {
                     alt={mascota.nombre}
                     className="detalle-mascota-img"
                     onError={(e) => {
+                        console.log("Error cargando imagen:", e.target.src);
                         e.target.onerror = null;
                         e.target.src = "/placeholder.jpg";
                     }}
+                    onLoad={() => console.log("Imagen cargada correctamente")}
                 />
             )}
 

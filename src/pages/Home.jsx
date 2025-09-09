@@ -50,7 +50,7 @@ function Home() {
                 <img
                   src={
                     m.fotoUrl.startsWith("http")
-                      ? m.fotoUrl
+                      ? m.fotoUrl.replace("http://localhost:4000", import.meta.env.VITE_API_URL || "https://petway-backend.onrender.com")
                       : `${import.meta.env.VITE_API_URL || "https://petway-backend.onrender.com"}${m.fotoUrl}`
                   }
                   alt={m.nombre}

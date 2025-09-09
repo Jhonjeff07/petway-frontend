@@ -77,7 +77,7 @@ function DetalleMascota() {
                 <img
                     src={
                         mascota.fotoUrl.startsWith("http")
-                            ? mascota.fotoUrl
+                            ? mascota.fotoUrl.replace("http://localhost:4000", import.meta.env.VITE_API_URL || "https://petway-backend.onrender.com")
                             : `${import.meta.env.VITE_API_URL || "https://petway-backend.onrender.com"}${mascota.fotoUrl}`
                     }
                     alt={mascota.nombre}

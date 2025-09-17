@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { guardarUsuario, eliminarUsuario } from "../services/auth";
+import { eliminarUsuario } from "../services/auth";
 
 function Navbar({ setIsAuth }) {
   const navigate = useNavigate();
@@ -40,9 +40,15 @@ function Navbar({ setIsAuth }) {
         {isAuth ? (
           <>
             <Link to="/publicar" onClick={() => setMenuOpen(false)}>Publicar</Link>
-            {/* Nuevo botón para cambiar contraseña */}
+            <Link to="/mis-mascotas" onClick={() => setMenuOpen(false)}>Mis Mascotas</Link> {/* ✅ nuevo */}
             <Link to="/cambiar-password" onClick={() => setMenuOpen(false)}>Cambiar Contraseña</Link>
-            <button onClick={() => { handleLogout(); setMenuOpen(false); }} className="nav-logout">
+            <button
+              onClick={() => {
+                handleLogout();
+                setMenuOpen(false);
+              }}
+              className="nav-logout"
+            >
               Cerrar Sesión
             </button>
           </>

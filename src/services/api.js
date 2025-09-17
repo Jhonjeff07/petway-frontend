@@ -44,6 +44,9 @@ export const verificarContraseña = (datos) =>
 // Obtener todas las mascotas
 export const obtenerMascotas = () => api.get("/mascotas");
 
+// Obtener mis mascotas (usuario autenticado)
+export const obtenerMisMascotas = () => api.get("/mascotas/mias");
+
 // Obtener una mascota por ID
 export const obtenerMascotaPorId = (id) => api.get(`/mascotas/${id}`);
 

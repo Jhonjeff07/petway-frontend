@@ -11,7 +11,8 @@ import DetalleMascota from "./pages/DetalleMascota";
 import RecuperarPassword from "./pages/RecuperarPassword";
 import RestablecerPassword from "./pages/RestablecerPassword";
 import VerificarPregunta from './pages/VerificarPregunta';
-import CambiarPassword from './pages/CambiarPassword'; // Asegúrate de importar el componente
+import CambiarPassword from './pages/CambiarPassword';
+import MisMascotas from './pages/MisMascotas'; // ✅ nuevo
 import "./App.css";
 
 function App() {
@@ -34,11 +35,9 @@ function App() {
           <Route path="/restablecer-password/:token" element={<RestablecerPassword />} />
           <Route path="/registro" element={<Registro />} />
           <Route path="/cambiar-password" element={isAuth ? <CambiarPassword /> : <Navigate to="/login" />} />
-          <Route
-            path="/publicar"
-            element={isAuth ? <Publicar /> : <Navigate to="/login" />}
-          />
+          <Route path="/publicar" element={isAuth ? <Publicar /> : <Navigate to="/login" />} />
           <Route path="/mascota/:id" element={<DetalleMascota />} />
+          <Route path="/mis-mascotas" element={isAuth ? <MisMascotas /> : <Navigate to="/login" />} /> {/* ✅ nueva ruta */}
         </Routes>
       </div>
       <Footer />

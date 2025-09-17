@@ -29,11 +29,11 @@ export const obtenerPreguntaSecreta = (email) =>
 export const verificarRespuestaSecreta = (datos) =>
   api.post("/usuarios/verificar-respuesta", datos);
 
-// 🔹 Restablecer contraseña
+// Restablecer contraseña (olvidada)
 export const restablecerPassword = (datos) =>
   api.post("/usuarios/restablecer-password", datos);
 
-// 🔹 Cambiar contraseña (desde perfil de usuario)
+// Cambiar contraseña (usuario autenticado)
 export const cambiarPassword = (datos) =>
   api.post("/usuarios/cambiar-password", datos);
 

@@ -1,40 +1,49 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { restablecerPassword } from "../services/api";
 import "../App.css";
 
 function RestablecerPassword() {
-  const { token } = useParams();
   const navigate = useNavigate();
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    confirmPassword: ""
+  });
   const [mensaje, setMensaje] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const manejarSubmit = async (e) => {
     e.preventDefault();
 
-    if (password !== confirmPassword) {
-      return setMensaje("Las contraseñas no coinciden");
+    if (formData.password !== formData.confirmPassword) {
+      return setMensaje("❌ Las contraseñas no coinciden");
     }
 
-    if (password.length < 8) {
-      return setMensaje("La contraseña debe tener al menos 8 caracteres");
+    if (formData.password.length < 8) {
+      return setMensaje("❌ La contraseña debe tener al menos 8 caracteres");
     }
 
     setIsLoading(true);
 
     try {
-      // 🔥 CORRECCIÓN: Enviar como objeto
       const res = await restablecerPassword({
-        token: token,
-        nuevaPassword: password
+        email: formData.email,
+        password: formData.password
       });
-      setMensaje(res.data.msg || "Contraseña restablecida con éxito");
+
+      setMensaje(res.data?.msg || "✅ Contraseña restablecida con éxito");
       setTimeout(() => navigate("/login"), 3000);
     } catch (error) {
       const errorMsg = error.response?.data?.msg || error.message || "Error al restablecer la contraseña";
-      setMensaje(errorMsg);
+      setMensaje(`❌ ${errorMsg}`);
     } finally {
       setIsLoading(false);
     }
@@ -45,18 +54,28 @@ function RestablecerPassword() {
       <h2>Restablecer Contraseña</h2>
       <form onSubmit={manejarSubmit}>
         <input
+          type="email"
+          name="email"
+          placeholder="Correo registrado"
+          value={formData.email}
+          onChange={handleChange}
+          required
+        />
+        <input
           type="password"
+          name="password"
           placeholder="Nueva contraseña (mínimo 8 caracteres)"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={formData.password}
+          onChange={handleChange}
           required
           minLength={8}
         />
         <input
           type="password"
+          name="confirmPassword"
           placeholder="Confirmar contraseña"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          value={formData.confirmPassword}
+          onChange={handleChange}
           required
           minLength={8}
         />
@@ -65,9 +84,7 @@ function RestablecerPassword() {
         </button>
       </form>
       {mensaje && (
-        <p className={mensaje.includes("éxito") || mensaje.includes("correctamente") ? "success" : "error"}>
-          {mensaje}
-        </p>
+        <p className={mensaje.includes("✅") ? "success" : "error"}>{mensaje}</p>
       )}
     </div>
   );

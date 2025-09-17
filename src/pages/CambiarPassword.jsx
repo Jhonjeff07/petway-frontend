@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { cambiarPassword } from "../services/api"; // ✅ Añade esta importación
+import { cambiarPassword } from "../services/api";
 import "../App.css";
 
 function CambiarPassword() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    currentPassword: "",
-    newPassword: "",
+    password: "",
     confirmPassword: "",
     securityQuestion: "",
     securityAnswer: ""
@@ -25,17 +24,17 @@ function CambiarPassword() {
   };
 
   const validateForm = () => {
-    if (!formData.currentPassword) {
-      setError("La contraseña actual es obligatoria");
+    if (!formData.password) {
+      setError("La nueva contraseña es obligatoria");
       return false;
     }
 
-    if (formData.newPassword && formData.newPassword.length < 8) {
+    if (formData.password.length < 8) {
       setError("La nueva contraseña debe tener al menos 8 caracteres");
       return false;
     }
 
-    if (formData.newPassword !== formData.confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       setError("Las contraseñas no coinciden");
       return false;
     }
@@ -60,30 +59,21 @@ function CambiarPassword() {
     }
 
     try {
-      const updateData = {
-        currentPassword: formData.currentPassword
-      };
-
-      if (formData.newPassword) {
-        updateData.newPassword = formData.newPassword;
-      }
+      const updateData = { password: formData.password };
 
       if (showQuestionFields && formData.securityQuestion && formData.securityAnswer) {
-        updateData.securityQuestion = formData.securityQuestion;
-        updateData.securityAnswer = formData.securityAnswer;
+        updateData.preguntaSecreta = formData.securityQuestion;
+        updateData.respuestaSecreta = formData.securityAnswer;
       }
 
       await cambiarPassword(updateData);
-      setSuccess("Datos actualizados correctamente. Redirigiendo...");
+      setSuccess("✅ Datos actualizados correctamente. Redirigiendo...");
 
       setTimeout(() => navigate("/"), 2000);
     } catch (error) {
       console.error("Error al cambiar contraseña:", error);
       const errorMsg = error.response?.data?.msg || "Error al actualizar los datos";
-      setError(errorMsg.includes("contraseña actual")
-        ? "La contraseña actual es incorrecta"
-        : errorMsg
-      );
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -93,48 +83,27 @@ function CambiarPassword() {
     <div className="form-page-container">
       <h1 className="form-page-title">🔒 Cambiar Contraseña y Pregunta de Seguridad</h1>
 
-      {error && (
-        <div className="error-message">
-          <strong>Error:</strong> {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="success-message">
-          <strong>Éxito:</strong> {success}
-        </div>
-      )}
+      {error && <div className="error-message"><strong>Error:</strong> {error}</div>}
+      {success && <div className="success-message"><strong>Éxito:</strong> {success}</div>}
 
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="currentPassword">Contraseña actual *</label>
+          <label htmlFor="password">Nueva contraseña *</label>
           <input
             type="password"
-            id="currentPassword"
-            name="currentPassword"
-            placeholder="Ingresa tu contraseña actual"
-            value={formData.currentPassword}
+            id="password"
+            name="password"
+            placeholder="Ingresa tu nueva contraseña (mínimo 8 caracteres)"
+            value={formData.password}
             onChange={handleChange}
             required
             disabled={loading}
+            minLength={8}
           />
         </div>
 
         <div className="form-group">
-          <label htmlFor="newPassword">Nueva contraseña (opcional)</label>
-          <input
-            type="password"
-            id="newPassword"
-            name="newPassword"
-            placeholder="Ingresa tu nueva contraseña (mínimo 8 caracteres)"
-            value={formData.newPassword}
-            onChange={handleChange}
-            disabled={loading}
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="confirmPassword">Confirmar nueva contraseña</label>
+          <label htmlFor="confirmPassword">Confirmar nueva contraseña *</label>
           <input
             type="password"
             id="confirmPassword"
@@ -142,7 +111,9 @@ function CambiarPassword() {
             placeholder="Confirma tu nueva contraseña"
             value={formData.confirmPassword}
             onChange={handleChange}
+            required
             disabled={loading}
+            minLength={8}
           />
         </div>
 
@@ -190,26 +161,16 @@ function CambiarPassword() {
                 disabled={loading}
                 required={showQuestionFields}
               />
-              <small>La respuesta es case-insensitive y se almacenará de forma segura</small>
+              <small>Se almacenará de forma segura</small>
             </div>
           </>
         )}
 
         <div className="form-buttons">
-          <button
-            type="submit"
-            className="submit-button"
-            disabled={loading}
-          >
+          <button type="submit" className="submit-button" disabled={loading}>
             {loading ? "🔄 Guardando..." : "💾 Guardar cambios"}
           </button>
-
-          <button
-            type="button"
-            className="cancel-button"
-            onClick={() => navigate("/")}
-            disabled={loading}
-          >
+          <button type="button" className="cancel-button" onClick={() => navigate("/")} disabled={loading}>
             ↩️ Cancelar
           </button>
         </div>

@@ -6,7 +6,8 @@ import "../App.css";
 function CambiarPassword() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    password: "",
+    currentPassword: "",
+    newPassword: "",
     confirmPassword: "",
     securityQuestion: "",
     securityAnswer: ""
@@ -24,17 +25,17 @@ function CambiarPassword() {
   };
 
   const validateForm = () => {
-    if (!formData.password) {
-      setError("La nueva contraseña es obligatoria");
+    if (!formData.currentPassword) {
+      setError("La contraseña actual es obligatoria");
       return false;
     }
 
-    if (formData.password.length < 8) {
+    if (formData.newPassword && formData.newPassword.length < 8) {
       setError("La nueva contraseña debe tener al menos 8 caracteres");
       return false;
     }
 
-    if (formData.password !== formData.confirmPassword) {
+    if (formData.newPassword && formData.newPassword !== formData.confirmPassword) {
       setError("Las contraseñas no coinciden");
       return false;
     }
@@ -59,11 +60,17 @@ function CambiarPassword() {
     }
 
     try {
-      const updateData = { password: formData.password };
+      const updateData = {
+        currentPassword: formData.currentPassword,
+      };
+
+      if (formData.newPassword) {
+        updateData.newPassword = formData.newPassword;
+      }
 
       if (showQuestionFields && formData.securityQuestion && formData.securityAnswer) {
-        updateData.preguntaSecreta = formData.securityQuestion;
-        updateData.respuestaSecreta = formData.securityAnswer;
+        updateData.securityQuestion = formData.securityQuestion;
+        updateData.securityAnswer = formData.securityAnswer;
       }
 
       await cambiarPassword(updateData);
@@ -88,22 +95,35 @@ function CambiarPassword() {
 
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="password">Nueva contraseña *</label>
+          <label htmlFor="currentPassword">Contraseña actual *</label>
           <input
             type="password"
-            id="password"
-            name="password"
-            placeholder="Ingresa tu nueva contraseña (mínimo 8 caracteres)"
-            value={formData.password}
+            id="currentPassword"
+            name="currentPassword"
+            placeholder="Ingresa tu contraseña actual"
+            value={formData.currentPassword}
             onChange={handleChange}
             required
+            disabled={loading}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="newPassword">Nueva contraseña (opcional)</label>
+          <input
+            type="password"
+            id="newPassword"
+            name="newPassword"
+            placeholder="Ingresa tu nueva contraseña (mínimo 8 caracteres)"
+            value={formData.newPassword}
+            onChange={handleChange}
             disabled={loading}
             minLength={8}
           />
         </div>
 
         <div className="form-group">
-          <label htmlFor="confirmPassword">Confirmar nueva contraseña *</label>
+          <label htmlFor="confirmPassword">Confirmar nueva contraseña</label>
           <input
             type="password"
             id="confirmPassword"
@@ -111,7 +131,6 @@ function CambiarPassword() {
             placeholder="Confirma tu nueva contraseña"
             value={formData.confirmPassword}
             onChange={handleChange}
-            required
             disabled={loading}
             minLength={8}
           />

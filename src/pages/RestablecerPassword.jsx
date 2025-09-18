@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { restablecerPassword } from "../services/api";
 import "../App.css";
 
 function RestablecerPassword() {
+  const { token } = useParams(); // ✅ ahora usamos el token
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    nuevaPassword: "",
     confirmPassword: ""
   });
   const [mensaje, setMensaje] = useState("");
@@ -23,11 +23,11 @@ function RestablecerPassword() {
   const manejarSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
+    if (formData.nuevaPassword !== formData.confirmPassword) {
       return setMensaje("❌ Las contraseñas no coinciden");
     }
 
-    if (formData.password.length < 8) {
+    if (formData.nuevaPassword.length < 8) {
       return setMensaje("❌ La contraseña debe tener al menos 8 caracteres");
     }
 
@@ -35,8 +35,8 @@ function RestablecerPassword() {
 
     try {
       const res = await restablecerPassword({
-        email: formData.email,
-        password: formData.password
+        token,
+        nuevaPassword: formData.nuevaPassword
       });
 
       setMensaje(res.data?.msg || "✅ Contraseña restablecida con éxito");
@@ -54,18 +54,10 @@ function RestablecerPassword() {
       <h2>Restablecer Contraseña</h2>
       <form onSubmit={manejarSubmit}>
         <input
-          type="email"
-          name="email"
-          placeholder="Correo registrado"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
-        <input
           type="password"
-          name="password"
+          name="nuevaPassword"
           placeholder="Nueva contraseña (mínimo 8 caracteres)"
-          value={formData.password}
+          value={formData.nuevaPassword}
           onChange={handleChange}
           required
           minLength={8}

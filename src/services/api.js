@@ -2,7 +2,7 @@ import axios from "axios";
 
 // 🔹 Configuración base de Axios
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL + "/api", // Usar la variable de entorno
+  baseURL: (import.meta.env.VITE_API_URL || "") + "/api", // Usar la variable de entorno
   withCredentials: true,
 });
 
@@ -63,6 +63,10 @@ export const cambiarEstadoMascota = (id, nuevoEstado) =>
 
 // Eliminar mascota
 export const eliminarMascota = (id) => api.delete(`/mascotas/${id}`);
+
+// 🔹 Buscar mascotas cercanas (lat, lng en decimal; radius en metros)
+export const obtenerMascotasCerca = (lat, lng, radius = 5000) =>
+  api.get(`/mascotas/near?lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}&radius=${encodeURIComponent(radius)}`);
 
 // Manejo de errores mejorado
 api.interceptors.response.use(

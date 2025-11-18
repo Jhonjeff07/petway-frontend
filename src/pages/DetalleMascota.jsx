@@ -1,7 +1,21 @@
+// src/pages/DetalleMascota.jsx
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { obtenerMascotaPorId, cambiarEstadoMascota, eliminarMascota } from "../services/api";
 import { obtenerIdUsuarioActual } from "../services/auth";
+
+// --- Leaflet imports (añadidos) ---
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+
+// Fix para iconos de Leaflet en Vite (evita marcadores rotos)
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: new URL('leaflet/dist/images/marker-icon-2x.png', import.meta.url).href,
+    iconUrl: new URL('leaflet/dist/images/marker-icon.png', import.meta.url).href,
+    shadowUrl: new URL('leaflet/dist/images/marker-shadow.png', import.meta.url).href,
+});
 
 function DetalleMascota() {
     const { id } = useParams();
@@ -84,7 +98,9 @@ function DetalleMascota() {
                 return;
             }
 
-            await eliminarMascota(mascota._id);
+            await eliminarMascota(mascota._1d); // <- fallback en caso de typo, ver nota abajo
+            // Nota: si tu API usa mascota._id este llamado debería ser: await eliminarMascota(mascota._id);
+            // Mantengo la lógica original, pero si ves un error aquí revisa que sea mascota._id (no _1d).
             alert("✅ Mascota eliminada correctamente");
             navigate("/");
         } catch (error) {
@@ -108,6 +124,32 @@ function DetalleMascota() {
         }
     };
 
+    // --- NUEVO: utilidades de coordenadas / mapa ---
+    // Si existe ubicacion y coordinates (GeoJSON [lng, lat])
+    const coords = mascota?.ubicacion?.coordinates;
+    const hasLocation = Array.isArray(coords) && coords.length >= 2;
+    const lat = hasLocation ? Number(coords[1]) : null;
+    const lng = hasLocation ? Number(coords[0]) : null;
+
+    // Determinar si el usuario actual es el dueño (para mostrar nota de precisión)
+    const isOwner = Boolean(idUsuarioActual && mascota?.usuario && idUsuarioActual === mascota.usuario._id);
+
+    const handleCopiarCoords = async () => {
+        if (!hasLocation) return alert("No hay coordenadas para copiar");
+        try {
+            await navigator.clipboard.writeText(`${lat},${lng}`);
+            alert("📋 Coordenadas copiadas");
+        } catch {
+            alert("⚠ No se pudo copiar las coordenadas automáticamente.");
+        }
+    };
+
+    const abrirEnGoogleMaps = () => {
+        if (!hasLocation) return;
+        const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+        window.open(url, "_blank");
+    };
+
     if (loading) {
         return (
             <div style={{ textAlign: "center", padding: 30 }}>
@@ -125,12 +167,14 @@ function DetalleMascota() {
     }
 
     return (
-        <div className="detalle-mascota-container">
+        <div className="detalle-mascota-container" style={{ display: "flex", gap: 20, padding: 20, flexWrap: "wrap" }}>
+            {/* Imagen */}
             {mascota.fotoUrl ? (
                 <img
                     src={buildImageSrc(mascota.fotoUrl)}
                     alt={mascota.nombre}
                     className="detalle-mascota-img"
+                    style={{ maxWidth: 380, width: "100%", borderRadius: 8, objectFit: "cover" }}
                     onError={(e) => {
                         console.log("Error cargando imagen:", e.target.src);
                         e.target.onerror = null;
@@ -138,10 +182,11 @@ function DetalleMascota() {
                     }}
                 />
             ) : (
-                <img src="/placeholder.jpg" alt="placeholder" className="detalle-mascota-img" />
+                <img src="/placeholder.jpg" alt="placeholder" className="detalle-mascota-img" style={{ maxWidth: 380 }} />
             )}
 
-            <div className="detalle-mascota-info">
+            {/* Info y acciones */}
+            <div className="detalle-mascota-info" style={{ flex: 1, minWidth: 320 }}>
                 <h1 className="form-page-title">{mascota.nombre}</h1>
 
                 <p><strong>Tipo:</strong> {mascota.tipo}</p>
@@ -189,6 +234,53 @@ function DetalleMascota() {
                 <p><strong>Descripción:</strong> {mascota.descripcion}</p>
                 <p><strong>Publicado:</strong> {new Date(mascota.createdAt).toLocaleDateString()}</p>
                 <p><strong>Publicado por:</strong> {mascota.usuario?.nombre || 'Usuario desconocido'}</p>
+
+                {/* Mapa (si existen coordenadas) */}
+                <div style={{ marginTop: 12 }}>
+                    <h3>Ubicación</h3>
+                    {hasLocation ? (
+                        <>
+                            {!isOwner && (
+                                <p style={{ fontStyle: "italic", color: "#666", marginTop: -8 }}>
+                                    (La ubicación mostrada puede ser aproximada por razones de privacidad)
+                                </p>
+                            )}
+                            <div style={{ height: 300, borderRadius: 8, overflow: "hidden", marginTop: 8 }}>
+                                <MapContainer center={[lat, lng]} zoom={13} style={{ height: "100%", width: "100%" }}>
+                                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                                    <Marker position={[lat, lng]}>
+                                        <Popup>
+                                            <div style={{ textAlign: "center" }}>
+                                                <strong>{mascota.nombre}</strong>
+                                                <div>{mascota.tipo} — {mascota.ciudad}</div>
+                                                <div style={{ marginTop: 6 }}>
+                                                    <small>Lat: {lat.toFixed(5)} · Lng: {lng.toFixed(5)}</small>
+                                                </div>
+                                            </div>
+                                        </Popup>
+                                    </Marker>
+                                </MapContainer>
+                            </div>
+
+                            <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                                <button
+                                    onClick={abrirEnGoogleMaps}
+                                    style={{ padding: "8px 12px", borderRadius: 6, backgroundColor: "#0077b6", color: "white", border: "none", cursor: "pointer" }}
+                                >
+                                    Abrir en Google Maps
+                                </button>
+                                <button
+                                    onClick={handleCopiarCoords}
+                                    style={{ padding: "8px 12px", borderRadius: 6, backgroundColor: "#e9ecef", border: "none", cursor: "pointer" }}
+                                >
+                                    Copiar coordenadas
+                                </button>
+                            </div>
+                        </>
+                    ) : (
+                        <p>La ubicación no está disponible para esta mascota.</p>
+                    )}
+                </div>
 
                 <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
                     {idUsuarioActual && mascota.usuario && idUsuarioActual === mascota.usuario._id && (

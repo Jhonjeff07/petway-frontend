@@ -503,3 +503,162 @@ form button {
 form button:hover {
   background-color: #023e8a;
 }
+
+/* ===========================
+   Mejoras responsive - DetalleMascota & Map
+   (añadidas al final, sin eliminar código previo)
+   =========================== */
+
+/* Contenedor: mobile-first */
+.detalle-mascota-container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 16px;
+  align-items: stretch;
+}
+
+/* Imagen: ocupa todo el ancho en móvil, con altura controlada */
+.detalle-mascota-img {
+  width: 100%;
+  max-height: 360px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(2, 46, 91, 0.06);
+}
+
+/* Info: tarjeta compacta en móvil */
+.detalle-mascota-info {
+  width: 100%;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(2, 46, 91, 0.06);
+}
+
+/* Reduce el tamaño de texto en móviles para mejor legibilidad */
+.detalle-mascota-info p {
+  font-size: 1rem;
+  margin: 8px 0;
+  line-height: 1.35;
+}
+
+/* Titulares más compactos */
+.form-page-title {
+  font-size: 1.25rem;
+  margin-bottom: 10px;
+}
+
+/* Botones en bloque con ancho completo en móvil */
+.detalle-mascota-info .delete-button,
+.detalle-mascota-info button {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+}
+
+/* Controles extra: centrar y hacer los botones separados en móvil */
+.detalle-mascota-info > div[style*="display: flex"] {
+  flex-direction: column;
+}
+
+/* Mapa: altura fija y responsive */
+.leaflet-container {
+  border-radius: 8px;
+  width: 100% !important;
+  height: 280px !important; /* altura móvil por defecto */
+  box-shadow: 0 8px 20px rgba(2,46,91,0.06);
+}
+
+/* Indoor popup font ajustado */
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  font-size: 0.95rem;
+}
+
+/* Panel de acciones (botones) — separarlos en móvil */
+.detalle-mascota-info .actions-row {
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+}
+
+/* copiar / google maps botones: estilo compacto */
+.detalle-mascota-info .maps-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Alineamiento para pantallas medianas (tablets) */
+@media (min-width: 600px) {
+  .leaflet-container {
+    height: 340px !important;
+  }
+
+  .detalle-mascota-info .maps-actions {
+    justify-content: flex-start;
+  }
+
+  .detalle-mascota-info .delete-button,
+  .detalle-mascota-info button {
+    width: auto;
+    padding: 10px 14px;
+  }
+}
+
+/* Desktop: layout en dos columnas (mantener tu breakpoint en 768px pero smoother) */
+@media (min-width: 768px) {
+  .detalle-mascota-container {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 28px;
+    padding: 24px;
+  }
+
+  .detalle-mascota-img {
+    max-width: 48%;
+    height: auto;
+    max-height: 520px;
+  }
+
+  .detalle-mascota-info {
+    max-width: calc(52% - 10px);
+    padding: 22px;
+  }
+
+  /* Botones: fila horizontal */
+  .detalle-mascota-info .actions-row {
+    flex-direction: row;
+    gap: 12px;
+  }
+}
+
+/* Mejora el contraste de los botones inline y el foco accesible */
+.detalle-mascota-info button,
+.detalle-mascota-info .delete-button {
+  border-radius: 8px;
+  font-weight: 600;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.detalle-mascota-info button:active {
+  transform: translateY(1px);
+}
+.detalle-mascota-info button:focus {
+  outline: 3px solid rgba(2,119,182,0.18);
+  outline-offset: 2px;
+}
+
+/* Tiny helpers */
+@media (max-width: 420px) {
+  .detalle-mascota-info p {
+    font-size: 0.97rem;
+  }
+
+  .leaflet-container {
+    height: 260px !important;
+  }
+
+  .form-page-title {
+    font-size: 1.15rem;
+  }
+}

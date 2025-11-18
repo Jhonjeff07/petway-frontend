@@ -71,3 +71,34 @@ button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
+
+/* ============================
+   Ajustes UX - mapa y botones (añadidos al final)
+   ============================ */
+
+/* Botón global preferente (mantener compatibilidad con tus estilos existentes) */
+button {
+  /* No eliminamos tus reglas previas, pero mejoramos el color primario por defecto */
+  background-color: #0077b6;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+button:hover {
+  opacity: 0.95;
+}
+
+/* Evitar overflow horizontal por mapas o contenedores */
+.leaflet-container, .map-container {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Asegurar que imágenes responsivas no desborden */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}

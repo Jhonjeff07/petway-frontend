@@ -68,15 +68,39 @@ export const eliminarMascota = (id) => api.delete(`/mascotas/${id}`);
 export const obtenerMascotasCerca = (lat, lng, radius = 5000) =>
   api.get(`/mascotas/near?lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}&radius=${encodeURIComponent(radius)}`);
 
-// Manejo de errores mejorado
+// Manejo de errores mejorado + interceptar expiración de token
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     let errorMessage = "Error en la API";
 
     if (error.response) {
+      // Mensaje original (tu código lo usaba)
       errorMessage = error.response.data.msg || `Error ${error.response.status}`;
       console.error(`❌ ${errorMessage}`, error.response.data);
+
+      // --- NUEVO: manejo automático de token expirado / inválido ---
+      // Detectamos tanto por mensaje como por status 401 para mayor robustez.
+      const serverMsg = (error.response.data && error.response.data.msg) ? String(error.response.data.msg) : "";
+      const status = error.response.status;
+
+      if (
+        serverMsg.toLowerCase().includes("token expir") || // cubre "Token expirado"
+        serverMsg.toLowerCase().includes("token inválido") ||
+        status === 401
+      ) {
+        try {
+          // eliminar token local y redirigir al login
+          localStorage.removeItem("token");
+          // informar al usuario
+          // usar alert para garantizar visibilidad; si prefieres un toast, cámbialo aquí.
+          alert("Tu sesión ha expirado o no es válida. Por favor, inicia sesión nuevamente.");
+          // redirigir a la ruta de login
+          window.location.href = "/login";
+        } catch (e) {
+          console.warn("No se pudo limpiar sesión automáticamente:", e);
+        }
+      }
     } else if (error.request) {
       errorMessage = "No se recibió respuesta del servidor";
       console.error("❌ No response received:", error.request);

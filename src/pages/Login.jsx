@@ -56,11 +56,18 @@ function Login({ setIsAuth }) {
       // Actualizar estado global
       setIsAuth(true);
 
+      // Si el usuario no está verificado, redirigimos a la pantalla de verificación
+      if (res.data.usuario && res.data.usuario.verified === false) {
+        alert("⚠ Tu correo no está verificado. Se te redirigirá a verificar tu email.");
+        navigate("/verificar-email", { state: { email: formData.email } });
+        return;
+      }
+
       alert("✅ Inicio de sesión exitoso");
       navigate("/");
-    } catch (error) {
+    } catch (err) {
       // Manejar diferentes tipos de errores
-      const errorMsg = error.response?.data?.msg || "Error en el servidor";
+      const errorMsg = err.response?.data?.msg || err || "Error en el servidor";
       setError(`❌ ${errorMsg}`);
     } finally {
       setLoading(false);

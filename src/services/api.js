@@ -113,4 +113,28 @@ api.interceptors.response.use(
   }
 );
 
+// =====================
+// FUNCIONES ADICIONALES DE USUARIO / VERIFICACIÓN
+// (las agregué para completar el flujo: obtener usuario actual,
+// actualizar perfil, logout y verificación por email)
+// =====================
+
+// Obtener usuario autenticado (perfil)
+export const obtenerUsuarioActual = () => api.get("/usuarios/me");
+
+// Actualizar perfil de usuario (soporta multipart/form-data si quieres enviar avatar)
+export const actualizarUsuario = (datos) => api.put("/usuarios/me", datos, {
+  headers: {
+    "Content-Type": "multipart/form-data"
+  }
+});
+
+// Cerrar sesión (si tu backend implementa esta ruta)
+export const logoutUsuario = () => api.post("/usuarios/logout");
+
+// Verificación de email (registro): enviar código y comprobar
+export const verifyEmailCode = (data) => api.post('/usuarios/verify-email', data);
+export const resendVerificationCode = (email) => api.post('/usuarios/resend-verification', { email });
+
+// Export default
 export default api;

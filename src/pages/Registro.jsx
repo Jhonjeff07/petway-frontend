@@ -12,6 +12,7 @@ function Registro() {
     preguntaSecreta: "", // Añade este campo
     respuestaSecreta: ""  // Añade este campo
   });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -23,12 +24,16 @@ function Registro() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       await registrarUsuario(formData);
-      alert("✅ Registro exitoso. Inicia sesión.");
-      navigate("/login");
+      alert("✅ Registro exitoso. Revisa tu correo para el código de verificación.");
+      // Enviamos al usuario a la página de verificación con su email para facilitar el flujo
+      navigate("/verificar-email", { state: { email: formData.email } });
     } catch (error) {
-      alert("❌ Error al registrar: " + (error.response?.data?.msg || "Error desconocido"));
+      alert("❌ Error al registrar: " + (error.response?.data?.msg || error || "Error desconocido"));
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -81,7 +86,9 @@ function Registro() {
           onChange={handleChange}
           required
         />
-        <button type="submit">Registrarse</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Registrando..." : "Registrarse"}
+        </button>
       </form>
     </div>
   );

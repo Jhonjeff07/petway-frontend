@@ -98,9 +98,8 @@ function DetalleMascota() {
                 return;
             }
 
-            await eliminarMascota(mascota._1d); // <- fallback en caso de typo, ver nota abajo
-            // Nota: si tu API usa mascota._id este llamado debería ser: await eliminarMascota(mascota._id);
-            // Mantengo la lógica original, pero si ves un error aquí revisa que sea mascota._id (no _1d).
+            // FIX: corregido typo _1d -> _id
+            await eliminarMascota(mascota._id);
             alert("✅ Mascota eliminada correctamente");
             navigate("/");
         } catch (error) {
@@ -125,7 +124,6 @@ function DetalleMascota() {
     };
 
     // --- NUEVO: utilidades de coordenadas / mapa ---
-    // Si existe ubicacion y coordinates (GeoJSON [lng, lat])
     const coords = mascota?.ubicacion?.coordinates;
     const hasLocation = Array.isArray(coords) && coords.length >= 2;
     const lat = hasLocation ? Number(coords[1]) : null;
@@ -149,6 +147,9 @@ function DetalleMascota() {
         const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
         window.open(url, "_blank");
     };
+
+    // Detectar si el usuario está logueado (pero no necesariamente el dueño)
+    const isLoggedIn = Boolean(localStorage.getItem("token") || idUsuarioActual);
 
     if (loading) {
         return (
@@ -215,7 +216,28 @@ function DetalleMascota() {
                         </button>
                     </p>
                 ) : (
-                    <p><strong>Teléfono de contacto:</strong> No especificado</p>
+                    // Si no hay teléfono (probablemente fue ocultado por backend a usuarios anónimos)
+                    <>
+                        {!isLoggedIn ? (
+                            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                                <p><strong>Teléfono de contacto:</strong> (Inicia sesión para ver el número)</p>
+                                <button
+                                    onClick={() => navigate('/login')}
+                                    style={{ padding: "6px 10px", borderRadius: 6, backgroundColor: "#0077b6", color: "#fff", border: "none", cursor: "pointer" }}
+                                >
+                                    Iniciar sesión
+                                </button>
+                                <button
+                                    onClick={() => navigate('/registro')}
+                                    style={{ padding: "6px 10px", borderRadius: 6, backgroundColor: "#e9ecef", border: "none", cursor: "pointer" }}
+                                >
+                                    Registrarme
+                                </button>
+                            </div>
+                        ) : (
+                            <p><strong>Teléfono de contacto:</strong> No especificado</p>
+                        )}
+                    </>
                 )}
 
                 <p><strong>Raza:</strong> {mascota.raza || 'No especificado'}</p>

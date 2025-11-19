@@ -1,8 +1,9 @@
 import axios from "axios";
 
 // 🔹 Configuración base de Axios
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://petway-backend.onrender.com";
 const api = axios.create({
-  baseURL: (import.meta.env.VITE_API_URL || "") + "/api", // Usar la variable de entorno
+  baseURL: API_BASE_URL + "/api", // Usar la variable de entorno
   withCredentials: true,
 });
 
@@ -92,6 +93,8 @@ api.interceptors.response.use(
         try {
           // eliminar token local y redirigir al login
           localStorage.removeItem("token");
+          localStorage.removeItem("auth");
+          localStorage.removeItem("usuario");
           // informar al usuario
           // usar alert para garantizar visibilidad; si prefieres un toast, cámbialo aquí.
           alert("Tu sesión ha expirado o no es válida. Por favor, inicia sesión nuevamente.");
@@ -109,7 +112,7 @@ api.interceptors.response.use(
       console.error("❌ Request setup error:", error.message);
     }
 
-    return Promise.reject(errorMessage);
+    return Promise.reject(error);
   }
 );
 

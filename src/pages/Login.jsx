@@ -56,18 +56,20 @@ function Login({ setIsAuth }) {
       // Actualizar estado global
       setIsAuth(true);
 
-      // Si el usuario no está verificado, redirigimos a la pantalla de verificación
-      if (res.data.usuario && res.data.usuario.verified === false) {
-        alert("⚠ Tu correo no está verificado. Se te redirigirá a verificar tu email.");
-        navigate("/verificar-email", { state: { email: formData.email } });
-        return;
-      }
-
       alert("✅ Inicio de sesión exitoso");
       navigate("/");
     } catch (err) {
-      // Manejar diferentes tipos de errores
-      const errorMsg = err.response?.data?.msg || err || "Error en el servidor";
+      // ✅ NUEVO: Manejar error de verificación de email
+      if (err.response?.status === 403 && err.response?.data?.needsVerification) {
+        // Redirigir a verificación de email sin mostrar error
+        navigate('/verificar-email', {
+          state: { email: formData.email }
+        });
+        return;
+      }
+
+      // Manejar otros tipos de errores
+      const errorMsg = err.response?.data?.msg || err?.message || "Error en el servidor";
       setError(`❌ ${errorMsg}`);
     } finally {
       setLoading(false);
@@ -123,6 +125,27 @@ function Login({ setIsAuth }) {
           }}
         >
           ¿Olvidaste tu contraseña?
+        </Link>
+      </div>
+
+      {/* ✅ NUEVO: Enlace para registrarse */}
+      <div style={{
+        textAlign: "center",
+        marginTop: "10px",
+        width: "100%"
+      }}>
+        <span style={{ color: "#666", marginRight: "5px" }}>
+          ¿No tienes cuenta?
+        </span>
+        <Link
+          to="/registro"
+          style={{
+            color: "#0077b6",
+            textDecoration: "underline",
+            display: "inline-block"
+          }}
+        >
+          Regístrate aquí
         </Link>
       </div>
     </div>

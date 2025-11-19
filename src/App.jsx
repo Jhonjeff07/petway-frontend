@@ -12,6 +12,7 @@ import RecuperarPassword from "./pages/RecuperarPassword";
 import RestablecerPassword from "./pages/RestablecerPassword";
 import VerificarPregunta from './pages/VerificarPregunta';
 import CambiarPassword from './pages/CambiarPassword';
+import VerificarEmail from './pages/VerificarEmail';
 import MisMascotas from './pages/MisMascotas'; // ✅ nuevo
 import "./App.css";
 
@@ -37,6 +38,7 @@ function App() {
           <Route path="/cambiar-password" element={isAuth ? <CambiarPassword /> : <Navigate to="/login" />} />
           <Route path="/publicar" element={isAuth ? <Publicar /> : <Navigate to="/login" />} />
           <Route path="/mascota/:id" element={<DetalleMascota />} />
+          <Route path="/verificar-email" element={<VerificarEmail />} />
           <Route path="/mis-mascotas" element={isAuth ? <MisMascotas /> : <Navigate to="/login" />} /> {/* ✅ nueva ruta */}
         </Routes>
       </div>

@@ -2,14 +2,22 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { eliminarUsuario } from "../services/auth";
 
-function Navbar({ setIsAuth }) {
+function Navbar({ isAuth, setIsAuth }) {
   const navigate = useNavigate();
-  const isAuth = localStorage.getItem("auth") === "true";
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch('https://petway-backend.onrender.com/api/usuarios/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+    } catch (e) {
+      console.warn('Error limpiando cookie:', e);
+    }
     localStorage.removeItem("auth");
     localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
     eliminarUsuario();
     setIsAuth(false);
     navigate("/");
@@ -40,13 +48,10 @@ function Navbar({ setIsAuth }) {
         {isAuth ? (
           <>
             <Link to="/publicar" onClick={() => setMenuOpen(false)}>Publicar</Link>
-            <Link to="/mis-mascotas" onClick={() => setMenuOpen(false)}>Mis Mascotas</Link> {/* ✅ nuevo */}
+            <Link to="/mis-mascotas" onClick={() => setMenuOpen(false)}>Mis Mascotas</Link>
             <Link to="/cambiar-password" onClick={() => setMenuOpen(false)}>Cambiar Contraseña</Link>
             <button
-              onClick={() => {
-                handleLogout();
-                setMenuOpen(false);
-              }}
+              onClick={() => { handleLogout(); setMenuOpen(false); }}
               className="nav-logout"
             >
               Cerrar Sesión

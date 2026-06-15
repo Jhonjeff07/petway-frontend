@@ -13,11 +13,11 @@ import RestablecerPassword from "./pages/RestablecerPassword";
 import VerificarPregunta from './pages/VerificarPregunta';
 import CambiarPassword from './pages/CambiarPassword';
 import VerificarEmail from './pages/VerificarEmail';
-import MisMascotas from './pages/MisMascotas'; // ✅ nuevo
+import MisMascotas from './pages/MisMascotas';
 import "./App.css";
 
 function App() {
-  const [isAuth, setIsAuth] = useState(false);
+  const [isAuth, setIsAuth] = useState(localStorage.getItem("auth") === "true");
 
   useEffect(() => {
     setIsAuth(localStorage.getItem("auth") === "true");
@@ -25,7 +25,7 @@ function App() {
 
   return (
     <div className="app-container">
-      <Navbar setIsAuth={setIsAuth} />
+      <Navbar isAuth={isAuth} setIsAuth={setIsAuth} />
       <div className="content">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -39,7 +39,7 @@ function App() {
           <Route path="/publicar" element={isAuth ? <Publicar /> : <Navigate to="/login" />} />
           <Route path="/mascota/:id" element={<DetalleMascota />} />
           <Route path="/verificar-email" element={<VerificarEmail />} />
-          <Route path="/mis-mascotas" element={isAuth ? <MisMascotas /> : <Navigate to="/login" />} /> {/* ✅ nueva ruta */}
+          <Route path="/mis-mascotas" element={isAuth ? <MisMascotas /> : <Navigate to="/login" />} />
         </Routes>
       </div>
       <Footer />

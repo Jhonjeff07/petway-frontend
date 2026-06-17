@@ -1,7 +1,7 @@
 // src/pages/DetalleMascota.jsx
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { obtenerMascotaPorId, cambiarEstadoMascota, eliminarMascota } from "../services/api";
+import { obtenerMascotaPorId, cambiarEstadoMascota, eliminarMascota, obtenerComentarios, crearComentario, eliminarComentario } from "../services/api";
 import { obtenerIdUsuarioActual } from "../services/auth";
 
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
@@ -24,6 +24,12 @@ function DetalleMascota() {
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
 
+    // Estados para comentarios
+    const [comentarios, setComentarios] = useState([]);
+    const [nuevoComentario, setNuevoComentario] = useState("");
+    const [comentarioLoading, setComentarioLoading] = useState(false);
+    const [usuarioPremium, setUsuarioPremium] = useState(false);
+
     useEffect(() => {
         const fetchMascota = async () => {
             try {
@@ -32,6 +38,17 @@ function DetalleMascota() {
                 setMascota(res.data);
                 const usuarioId = obtenerIdUsuarioActual();
                 setIdUsuarioActual(usuarioId);
+
+                // Cargar comentarios
+                const resComentarios = await obtenerComentarios(id);
+                setComentarios(resComentarios.data);
+
+                // Verificar si el usuario es premium desde localStorage
+                const usuarioGuardado = localStorage.getItem("usuario");
+                if (usuarioGuardado) {
+                    const u = JSON.parse(usuarioGuardado);
+                    setUsuarioPremium(u.premium === true);
+                }
             } catch (error) {
                 console.error("❌ Error cargando mascota:", error);
                 alert("❌ No se pudo cargar la mascota. Serás redirigido al inicio.");
@@ -86,6 +103,35 @@ function DetalleMascota() {
             alert(typeof error === "string" ? error : "❌ No se pudo eliminar la mascota");
         } finally {
             setActionLoading(false);
+        }
+    };
+
+    const handleEnviarComentario = async () => {
+        if (!nuevoComentario.trim()) return;
+        try {
+            setComentarioLoading(true);
+            const res = await crearComentario(id, nuevoComentario);
+            setComentarios(prev => [res.data, ...prev]);
+            setNuevoComentario("");
+        } catch (error) {
+            const msg = error?.response?.data?.msg || "";
+            if (error?.response?.data?.needsPremium) {
+                alert("⭐ Función Premium — actualiza tu plan para comentar");
+            } else {
+                alert(msg || "❌ Error al enviar comentario");
+            }
+        } finally {
+            setComentarioLoading(false);
+        }
+    };
+
+    const handleEliminarComentario = async (comentarioId) => {
+        if (!window.confirm("¿Eliminar este comentario?")) return;
+        try {
+            await eliminarComentario(id, comentarioId);
+            setComentarios(prev => prev.filter(c => c._id !== comentarioId));
+        } catch (error) {
+            alert("❌ No se pudo eliminar el comentario");
         }
     };
 
@@ -291,6 +337,130 @@ function DetalleMascota() {
                     >
                         ⬅ Volver al inicio
                     </button>
+                </div>
+
+                {/* ✅ SECCIÓN DE COMENTARIOS */}
+                <div style={{ marginTop: 30, borderTop: "1px solid #eee", paddingTop: 20 }}>
+                    <h3 style={{ color: "#023e8a", marginBottom: 12 }}>
+                        💬 Comentarios ({comentarios.length})
+                    </h3>
+
+                    {/* Formulario para comentar */}
+                    {idUsuarioActual ? (
+                        usuarioPremium ? (
+                            <div style={{ marginBottom: 20 }}>
+                                <textarea
+                                    value={nuevoComentario}
+                                    onChange={(e) => setNuevoComentario(e.target.value)}
+                                    placeholder="Escribe un comentario..."
+                                    maxLength={500}
+                                    rows={3}
+                                    style={{
+                                        width: "100%", padding: 10, borderRadius: 8,
+                                        border: "1px solid #ddd", fontSize: 14,
+                                        resize: "vertical", fontFamily: "inherit"
+                                    }}
+                                />
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
+                                    <span style={{ fontSize: 12, color: "#999" }}>{nuevoComentario.length}/500</span>
+                                    <button
+                                        onClick={handleEnviarComentario}
+                                        disabled={comentarioLoading || !nuevoComentario.trim()}
+                                        style={{
+                                            padding: "8px 18px", borderRadius: 6,
+                                            backgroundColor: "#0077b6", color: "#fff",
+                                            border: "none", cursor: "pointer", fontWeight: "bold"
+                                        }}
+                                    >
+                                        {comentarioLoading ? "Enviando..." : "Comentar"}
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div style={{
+                                background: "#fff8e1", border: "1px solid #ffd54f",
+                                borderRadius: 8, padding: 14, marginBottom: 16, textAlign: "center"
+                            }}>
+                                <p style={{ margin: 0, color: "#795548", fontWeight: "bold" }}>
+                                    ⭐ Función Premium
+                                </p>
+                                <p style={{ margin: "6px 0 0", color: "#795548", fontSize: 13 }}>
+                                    Actualiza tu plan para poder comentar en las publicaciones
+                                </p>
+                            </div>
+                        )
+                    ) : (
+                        <div style={{
+                            background: "#f0f4ff", border: "1px solid #c5d0f5",
+                            borderRadius: 8, padding: 14, marginBottom: 16, textAlign: "center"
+                        }}>
+                            <p style={{ margin: 0, color: "#023e8a" }}>
+                                <button
+                                    onClick={() => navigate('/login')}
+                                    style={{
+                                        background: "none", border: "none", color: "#0077b6",
+                                        cursor: "pointer", fontWeight: "bold", fontSize: 14
+                                    }}
+                                >
+                                    Inicia sesión
+                                </button>
+                                {" "}para ver y escribir comentarios
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Lista de comentarios */}
+                    {comentarios.length === 0 ? (
+                        <p style={{ color: "#999", textAlign: "center", fontSize: 14 }}>
+                            No hay comentarios aún. ¡Sé el primero!
+                        </p>
+                    ) : (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                            {comentarios.map(c => (
+                                <div key={c._id} style={{
+                                    background: "#f8f9fa", borderRadius: 8,
+                                    padding: 12, border: "1px solid #eee"
+                                }}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                            <strong style={{ color: "#023e8a", fontSize: 14 }}>
+                                                {c.usuario?.nombre || 'Usuario'}
+                                            </strong>
+                                            {c.usuario?.premium && (
+                                                <span style={{
+                                                    background: "#ffd700", color: "#795548",
+                                                    fontSize: 11, padding: "2px 6px",
+                                                    borderRadius: 4, fontWeight: "bold"
+                                                }}>
+                                                    ⭐ Premium
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                            <span style={{ fontSize: 12, color: "#999" }}>
+                                                {new Date(c.createdAt).toLocaleDateString()}
+                                            </span>
+                                            {idUsuarioActual && c.usuario?._id === idUsuarioActual && (
+                                                <button
+                                                    onClick={() => handleEliminarComentario(c._id)}
+                                                    style={{
+                                                        background: "none", border: "none",
+                                                        color: "#e74c3c", cursor: "pointer",
+                                                        fontSize: 13, padding: "0 4px"
+                                                    }}
+                                                >
+                                                    🗑
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <p style={{ margin: 0, fontSize: 14, color: "#333", lineHeight: 1.5 }}>
+                                        {c.texto}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

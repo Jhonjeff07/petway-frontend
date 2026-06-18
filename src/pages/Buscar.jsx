@@ -6,7 +6,6 @@ import L from "leaflet";
 import "../App.css";
 import "leaflet/dist/leaflet.css";
 
-// 🔧 Fix para íconos de Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: new URL("leaflet/dist/images/marker-icon-2x.png", import.meta.url).href,
@@ -28,7 +27,7 @@ function Buscar() {
   const [loading, setLoading] = useState(true);
   const [userLocation, setUserLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
-  const [radius, setRadius] = useState(5000); // 🔹 Valor por defecto 5km
+  const [radius, setRadius] = useState(5000);
 
   useEffect(() => {
     const cargarMascotas = async () => {
@@ -50,18 +49,15 @@ function Buscar() {
     return searchString.includes(filtro.toLowerCase());
   });
 
-  const center = userLocation || [4.6097, -74.0817]; // Bogotá por defecto
+  const center = userLocation || [4.6097, -74.0817];
 
-  // 📍 Buscar mascotas cercanas
   const handleBuscarCerca = () => {
     if (!navigator.geolocation) {
       setErrorMsg("La geolocalización no está soportada por tu navegador.");
       return;
     }
-
     setErrorMsg("");
     setLoading(true);
-
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const lat = pos.coords.latitude;
@@ -92,7 +88,6 @@ function Buscar() {
         <p>Aquí podrás ver y buscar todas las mascotas registradas en la plataforma.</p>
       </div>
 
-      {/* 🔹 Barra de búsqueda */}
       <div className="search-container">
         <input
           type="text"
@@ -104,7 +99,6 @@ function Buscar() {
         <span className="search-icon">🔍</span>
       </div>
 
-      {/* 🔹 Selector de distancia + botón */}
       <div style={{ textAlign: "center", margin: "15px 0" }}>
         <label htmlFor="radius" style={{ marginRight: "10px", fontWeight: "500" }}>
           Distancia:
@@ -113,27 +107,19 @@ function Buscar() {
           id="radius"
           value={radius}
           onChange={(e) => setRadius(Number(e.target.value))}
-          style={{
-            padding: "6px 10px",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-            marginRight: "10px",
-          }}
+          style={{ padding: "6px 10px", borderRadius: "8px", border: "1px solid #ccc", marginRight: "10px" }}
         >
           <option value={1000}>1 km</option>
           <option value={5000}>5 km</option>
           <option value={10000}>10 km</option>
           <option value={20000}>20 km</option>
         </select>
-
         <button onClick={handleBuscarCerca} className="btn-geolocalizar">
           📍 Buscar mascotas cerca de mí
         </button>
-
         {errorMsg && <p style={{ color: "red", marginTop: "10px" }}>{errorMsg}</p>}
       </div>
 
-      {/* 🔹 Mapa */}
       {!loading && mascotasFiltradas.length > 0 && (
         <div style={{ height: "400px", width: "100%", margin: "20px 0", borderRadius: "10px", overflow: "hidden" }}>
           <MapContainer center={center} zoom={userLocation ? 13 : 6} style={{ height: "100%", width: "100%" }}>
@@ -142,22 +128,17 @@ function Buscar() {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
             />
-
             {userLocation && (
               <Marker position={userLocation}>
                 <Popup>📍 Tú estás aquí</Popup>
               </Marker>
             )}
-
             {mascotasFiltradas
               .filter((m) => m.ubicacion && m.ubicacion.coordinates)
               .map((m) => (
                 <Marker
                   key={m._id}
-                  position={[
-                    m.ubicacion.coordinates[1], // lat
-                    m.ubicacion.coordinates[0], // lng
-                  ]}
+                  position={[m.ubicacion.coordinates[1], m.ubicacion.coordinates[0]]}
                 >
                   <Popup>
                     <div style={{ textAlign: "center" }}>
@@ -173,7 +154,6 @@ function Buscar() {
         </div>
       )}
 
-      {/* 🔹 Listado de mascotas */}
       <h2 className="home-title">🐾 Mascotas Registradas</h2>
 
       {loading ? (
@@ -201,10 +181,22 @@ function Buscar() {
                 />
               )}
               <div className="mascota-info">
+                {m.destacada && (
+                  <span style={{
+                    background: "#ffd700",
+                    color: "#795548",
+                    fontSize: 11,
+                    padding: "2px 8px",
+                    borderRadius: 4,
+                    fontWeight: "bold",
+                    display: "inline-block",
+                    marginBottom: 4
+                  }}>
+                    ⭐ Destacada
+                  </span>
+                )}
                 <h3>{m.nombre}</h3>
-                <p>
-                  <strong>{m.tipo}</strong> - {m.ciudad}
-                </p>
+                <p><strong>{m.tipo}</strong> - {m.ciudad}</p>
                 <p className="mascota-estado">
                   {m.estado === "encontrado" ? (
                     <span className="estado-encontrado">✅ Encontrado</span>

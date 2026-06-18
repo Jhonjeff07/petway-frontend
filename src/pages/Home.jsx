@@ -19,7 +19,6 @@ function Home() {
         setLoading(false);
       }
     };
-
     fetchMascotas();
   }, []);
 
@@ -41,11 +40,7 @@ function Home() {
           <p>No hay mascotas registradas aún</p>
         ) : (
           mascotas.map((m) => (
-            <Link
-              key={m._id}
-              to={`/mascota/${m._id}`}
-              className="mascota-card"
-            >
+            <Link key={m._id} to={`/mascota/${m._id}`} className="mascota-card">
               {m.fotoUrl && (
                 <img
                   src={
@@ -56,19 +51,28 @@ function Home() {
                   alt={m.nombre}
                   className="mascota-img"
                   onError={(e) => {
-                    console.log("Error cargando imagen:", e.target.src);
                     e.target.onerror = null;
                     e.target.src = "/placeholder.jpg";
                   }}
-                  onLoad={() => console.log("Imagen cargada correctamente")}
                 />
               )}
               <div className="mascota-info">
+                {m.destacada && (
+                  <span style={{
+                    background: "#ffd700",
+                    color: "#795548",
+                    fontSize: 11,
+                    padding: "2px 8px",
+                    borderRadius: 4,
+                    fontWeight: "bold",
+                    display: "inline-block",
+                    marginBottom: 4
+                  }}>
+                    ⭐ Destacada
+                  </span>
+                )}
                 <h3>{m.nombre}</h3>
-                <p>
-                  <strong>{m.tipo}</strong> - {m.ciudad}
-                </p>
-
+                <p><strong>{m.tipo}</strong> - {m.ciudad}</p>
                 <p className="mascota-estado">
                   {m.estado === "encontrado" ? (
                     <span className="estado-encontrado">✅ Encontrado</span>
@@ -76,7 +80,6 @@ function Home() {
                     <span className="estado-perdido">❌ Perdido</span>
                   )}
                 </p>
-
                 <p className="mascota-fecha">
                   Publicado: {new Date(m.createdAt).toLocaleDateString()}
                 </p>

@@ -161,7 +161,7 @@ function DetalleMascota() {
     if (!mascota) return <div style={{ textAlign: "center", padding: 30 }}><p>No se encontró la mascota.</p></div>;
 
     const urlMascota = `https://petway-frontend.onrender.com/mascota/${id}`;
-    const estadoTexto = mascota.estado === "perdido" ? "está perdido 🐾" : "fue encontrado 🎉";
+    const estadoTexto = mascota.estado === "perdido" ? "busca a su familia 🐾" : "ya está en casa 🎉";
     const estadoColor = mascota.estado === "perdido" ? "#e74c3c" : "#2ecc71";
 
     return (

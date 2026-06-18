@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { obtenerMascotaPorId, cambiarEstadoMascota, eliminarMascota, obtenerComentarios, crearComentario, eliminarComentario } from "../services/api";
 import { obtenerIdUsuarioActual } from "../services/auth";
+import { QRCodeSVG } from 'qrcode.react';
 
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
@@ -23,8 +24,6 @@ function DetalleMascota() {
     const [idUsuarioActual, setIdUsuarioActual] = useState(null);
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
-
-    // Estados para comentarios
     const [comentarios, setComentarios] = useState([]);
     const [nuevoComentario, setNuevoComentario] = useState("");
     const [comentarioLoading, setComentarioLoading] = useState(false);
@@ -38,12 +37,8 @@ function DetalleMascota() {
                 setMascota(res.data);
                 const usuarioId = obtenerIdUsuarioActual();
                 setIdUsuarioActual(usuarioId);
-
-                // Cargar comentarios
                 const resComentarios = await obtenerComentarios(id);
                 setComentarios(resComentarios.data);
-
-                // Verificar si el usuario es premium desde localStorage
                 const usuarioGuardado = localStorage.getItem("usuario");
                 if (usuarioGuardado) {
                     const u = JSON.parse(usuarioGuardado);
@@ -114,11 +109,10 @@ function DetalleMascota() {
             setComentarios(prev => [res.data, ...prev]);
             setNuevoComentario("");
         } catch (error) {
-            const msg = error?.response?.data?.msg || "";
             if (error?.response?.data?.needsPremium) {
                 alert("⭐ Función Premium — actualiza tu plan para comentar");
             } else {
-                alert(msg || "❌ Error al enviar comentario");
+                alert(error?.response?.data?.msg || "❌ Error al enviar comentario");
             }
         } finally {
             setComentarioLoading(false);
@@ -168,19 +162,48 @@ function DetalleMascota() {
     if (loading) return <div style={{ textAlign: "center", padding: 30 }}><p>Cargando mascota...</p></div>;
     if (!mascota) return <div style={{ textAlign: "center", padding: 30 }}><p>No se encontró la mascota.</p></div>;
 
+    const urlMascota = `https://petway-frontend.onrender.com/mascota/${id}`;
+
     return (
         <div className="detalle-mascota-container">
             {/* Imagen */}
-            {mascota.fotoUrl ? (
-                <img
-                    src={buildImageSrc(mascota.fotoUrl)}
-                    alt={mascota.nombre}
-                    className="detalle-mascota-img"
-                    onError={(e) => { e.target.onerror = null; e.target.src = "/placeholder.jpg"; }}
-                />
-            ) : (
-                <img src="/placeholder.jpg" alt="placeholder" className="detalle-mascota-img" />
-            )}
+            <div style={{ display: "flex", flexDirection: "column", gap: 16, alignItems: "center" }}>
+                {mascota.fotoUrl ? (
+                    <img
+                        src={buildImageSrc(mascota.fotoUrl)}
+                        alt={mascota.nombre}
+                        className="detalle-mascota-img"
+                        onError={(e) => { e.target.onerror = null; e.target.src = "/placeholder.jpg"; }}
+                    />
+                ) : (
+                    <img src="/placeholder.jpg" alt="placeholder" className="detalle-mascota-img" />
+                )}
+
+                {/* ✅ QR CODE */}
+                <div style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 8,
+                    padding: 16,
+                    background: "#fff",
+                    borderRadius: 10,
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                    width: "100%",
+                    maxWidth: 200
+                }}>
+                    <QRCodeSVG
+                        value={urlMascota}
+                        size={160}
+                        bgColor="#ffffff"
+                        fgColor="#023e8a"
+                        level="H"
+                    />
+                    <p style={{ fontSize: 11, color: "#666", textAlign: "center", margin: 0 }}>
+                        Escanea para ver en PetWay
+                    </p>
+                </div>
+            </div>
 
             {/* Info */}
             <div className="detalle-mascota-info">
@@ -212,25 +235,10 @@ function DetalleMascota() {
                     ) : (
                         <span>
                             <span style={{ color: "#666", fontSize: 14 }}>Inicia sesión para contactar — </span>
-                            <button
-                                onClick={() => navigate('/login')}
-                                style={{
-                                    padding: "4px 10px", borderRadius: 6,
-                                    backgroundColor: "#0077b6", color: "#fff",
-                                    border: "none", cursor: "pointer", fontWeight: "bold",
-                                    fontSize: 13, marginRight: 6
-                                }}
-                            >
+                            <button onClick={() => navigate('/login')} style={{ padding: "4px 10px", borderRadius: 6, backgroundColor: "#0077b6", color: "#fff", border: "none", cursor: "pointer", fontWeight: "bold", fontSize: 13, marginRight: 6 }}>
                                 Iniciar sesión
                             </button>
-                            <button
-                                onClick={() => navigate('/registro')}
-                                style={{
-                                    padding: "4px 10px", borderRadius: 6,
-                                    backgroundColor: "#e9ecef",
-                                    border: "none", cursor: "pointer", fontSize: 13
-                                }}
-                            >
+                            <button onClick={() => navigate('/registro')} style={{ padding: "4px 10px", borderRadius: 6, backgroundColor: "#e9ecef", border: "none", cursor: "pointer", fontSize: 13 }}>
                                 Registrarme
                             </button>
                         </span>
@@ -281,16 +289,10 @@ function DetalleMascota() {
                                 </MapContainer>
                             </div>
                             <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                                <button
-                                    onClick={abrirEnGoogleMaps}
-                                    style={{ padding: "8px 12px", borderRadius: 6, backgroundColor: "#0077b6", color: "white", border: "none", cursor: "pointer" }}
-                                >
+                                <button onClick={abrirEnGoogleMaps} style={{ padding: "8px 12px", borderRadius: 6, backgroundColor: "#0077b6", color: "white", border: "none", cursor: "pointer" }}>
                                     Abrir en Google Maps
                                 </button>
-                                <button
-                                    onClick={handleCopiarCoords}
-                                    style={{ padding: "8px 12px", borderRadius: 6, backgroundColor: "#e9ecef", border: "none", cursor: "pointer" }}
-                                >
+                                <button onClick={handleCopiarCoords} style={{ padding: "8px 12px", borderRadius: 6, backgroundColor: "#e9ecef", border: "none", cursor: "pointer" }}>
                                     Copiar coordenadas
                                 </button>
                             </div>
@@ -304,48 +306,25 @@ function DetalleMascota() {
                 <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
                     {idUsuarioActual && mascota.usuario && idUsuarioActual === mascota.usuario._id && (
                         <>
-                            <button
-                                onClick={actualizarEstado}
-                                disabled={actionLoading}
-                                style={{
-                                    backgroundColor: "#0077b6", color: "white",
-                                    padding: "10px", border: "none", borderRadius: "5px",
-                                    cursor: actionLoading ? "not-allowed" : "pointer", fontWeight: "bold"
-                                }}
-                            >
+                            <button onClick={actualizarEstado} disabled={actionLoading} style={{ backgroundColor: "#0077b6", color: "white", padding: "10px", border: "none", borderRadius: "5px", cursor: actionLoading ? "not-allowed" : "pointer", fontWeight: "bold" }}>
                                 {actionLoading ? "Procesando..." : (mascota.estado === "perdido" ? "Marcar como encontrado" : "Marcar como perdido")}
                             </button>
-                            <button
-                                onClick={handleEliminar}
-                                disabled={actionLoading}
-                                style={{
-                                    backgroundColor: "#e74c3c", color: "white",
-                                    padding: "10px", border: "none", borderRadius: "5px",
-                                    cursor: actionLoading ? "not-allowed" : "pointer", fontWeight: "bold"
-                                }}
-                            >
+                            <button onClick={handleEliminar} disabled={actionLoading} style={{ backgroundColor: "#e74c3c", color: "white", padding: "10px", border: "none", borderRadius: "5px", cursor: actionLoading ? "not-allowed" : "pointer", fontWeight: "bold" }}>
                                 {actionLoading ? "Procesando..." : "🗑 Eliminar mascota"}
                             </button>
                         </>
                     )}
-                    <button
-                        onClick={() => navigate("/")}
-                        style={{
-                            backgroundColor: "#6c757d", color: "white",
-                            padding: "10px", border: "none", borderRadius: "5px", cursor: "pointer"
-                        }}
-                    >
+                    <button onClick={() => navigate("/")} style={{ backgroundColor: "#6c757d", color: "white", padding: "10px", border: "none", borderRadius: "5px", cursor: "pointer" }}>
                         ⬅ Volver al inicio
                     </button>
                 </div>
 
-                {/* ✅ SECCIÓN DE COMENTARIOS */}
+                {/* COMENTARIOS */}
                 <div style={{ marginTop: 30, borderTop: "1px solid #eee", paddingTop: 20 }}>
                     <h3 style={{ color: "#023e8a", marginBottom: 12 }}>
                         💬 Comentarios ({comentarios.length})
                     </h3>
 
-                    {/* Formulario para comentar */}
                     {idUsuarioActual ? (
                         usuarioPremium ? (
                             <div style={{ marginBottom: 20 }}>
@@ -355,53 +334,29 @@ function DetalleMascota() {
                                     placeholder="Escribe un comentario..."
                                     maxLength={500}
                                     rows={3}
-                                    style={{
-                                        width: "100%", padding: 10, borderRadius: 8,
-                                        border: "1px solid #ddd", fontSize: 14,
-                                        resize: "vertical", fontFamily: "inherit"
-                                    }}
+                                    style={{ width: "100%", padding: 10, borderRadius: 8, border: "1px solid #ddd", fontSize: 14, resize: "vertical", fontFamily: "inherit" }}
                                 />
                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
                                     <span style={{ fontSize: 12, color: "#999" }}>{nuevoComentario.length}/500</span>
                                     <button
                                         onClick={handleEnviarComentario}
                                         disabled={comentarioLoading || !nuevoComentario.trim()}
-                                        style={{
-                                            padding: "8px 18px", borderRadius: 6,
-                                            backgroundColor: "#0077b6", color: "#fff",
-                                            border: "none", cursor: "pointer", fontWeight: "bold"
-                                        }}
+                                        style={{ padding: "8px 18px", borderRadius: 6, backgroundColor: "#0077b6", color: "#fff", border: "none", cursor: "pointer", fontWeight: "bold" }}
                                     >
                                         {comentarioLoading ? "Enviando..." : "Comentar"}
                                     </button>
                                 </div>
                             </div>
                         ) : (
-                            <div style={{
-                                background: "#fff8e1", border: "1px solid #ffd54f",
-                                borderRadius: 8, padding: 14, marginBottom: 16, textAlign: "center"
-                            }}>
-                                <p style={{ margin: 0, color: "#795548", fontWeight: "bold" }}>
-                                    ⭐ Función Premium
-                                </p>
-                                <p style={{ margin: "6px 0 0", color: "#795548", fontSize: 13 }}>
-                                    Actualiza tu plan para poder comentar en las publicaciones
-                                </p>
+                            <div style={{ background: "#fff8e1", border: "1px solid #ffd54f", borderRadius: 8, padding: 14, marginBottom: 16, textAlign: "center" }}>
+                                <p style={{ margin: 0, color: "#795548", fontWeight: "bold" }}>⭐ Función Premium</p>
+                                <p style={{ margin: "6px 0 0", color: "#795548", fontSize: 13 }}>Actualiza tu plan para poder comentar en las publicaciones</p>
                             </div>
                         )
                     ) : (
-                        <div style={{
-                            background: "#f0f4ff", border: "1px solid #c5d0f5",
-                            borderRadius: 8, padding: 14, marginBottom: 16, textAlign: "center"
-                        }}>
+                        <div style={{ background: "#f0f4ff", border: "1px solid #c5d0f5", borderRadius: 8, padding: 14, marginBottom: 16, textAlign: "center" }}>
                             <p style={{ margin: 0, color: "#023e8a" }}>
-                                <button
-                                    onClick={() => navigate('/login')}
-                                    style={{
-                                        background: "none", border: "none", color: "#0077b6",
-                                        cursor: "pointer", fontWeight: "bold", fontSize: 14
-                                    }}
-                                >
+                                <button onClick={() => navigate('/login')} style={{ background: "none", border: "none", color: "#0077b6", cursor: "pointer", fontWeight: "bold", fontSize: 14 }}>
                                     Inicia sesión
                                 </button>
                                 {" "}para ver y escribir comentarios
@@ -409,54 +364,27 @@ function DetalleMascota() {
                         </div>
                     )}
 
-                    {/* Lista de comentarios */}
                     {comentarios.length === 0 ? (
-                        <p style={{ color: "#999", textAlign: "center", fontSize: 14 }}>
-                            No hay comentarios aún. ¡Sé el primero!
-                        </p>
+                        <p style={{ color: "#999", textAlign: "center", fontSize: 14 }}>No hay comentarios aún. ¡Sé el primero!</p>
                     ) : (
                         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                             {comentarios.map(c => (
-                                <div key={c._id} style={{
-                                    background: "#f8f9fa", borderRadius: 8,
-                                    padding: 12, border: "1px solid #eee"
-                                }}>
+                                <div key={c._id} style={{ background: "#f8f9fa", borderRadius: 8, padding: 12, border: "1px solid #eee" }}>
                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                                         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                            <strong style={{ color: "#023e8a", fontSize: 14 }}>
-                                                {c.usuario?.nombre || 'Usuario'}
-                                            </strong>
+                                            <strong style={{ color: "#023e8a", fontSize: 14 }}>{c.usuario?.nombre || 'Usuario'}</strong>
                                             {c.usuario?.premium && (
-                                                <span style={{
-                                                    background: "#ffd700", color: "#795548",
-                                                    fontSize: 11, padding: "2px 6px",
-                                                    borderRadius: 4, fontWeight: "bold"
-                                                }}>
-                                                    ⭐ Premium
-                                                </span>
+                                                <span style={{ background: "#ffd700", color: "#795548", fontSize: 11, padding: "2px 6px", borderRadius: 4, fontWeight: "bold" }}>⭐ Premium</span>
                                             )}
                                         </div>
                                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                            <span style={{ fontSize: 12, color: "#999" }}>
-                                                {new Date(c.createdAt).toLocaleDateString()}
-                                            </span>
+                                            <span style={{ fontSize: 12, color: "#999" }}>{new Date(c.createdAt).toLocaleDateString()}</span>
                                             {idUsuarioActual && c.usuario?._id === idUsuarioActual && (
-                                                <button
-                                                    onClick={() => handleEliminarComentario(c._id)}
-                                                    style={{
-                                                        background: "none", border: "none",
-                                                        color: "#e74c3c", cursor: "pointer",
-                                                        fontSize: 13, padding: "0 4px"
-                                                    }}
-                                                >
-                                                    🗑
-                                                </button>
+                                                <button onClick={() => handleEliminarComentario(c._id)} style={{ background: "none", border: "none", color: "#e74c3c", cursor: "pointer", fontSize: 13, padding: "0 4px" }}>🗑</button>
                                             )}
                                         </div>
                                     </div>
-                                    <p style={{ margin: 0, fontSize: 14, color: "#333", lineHeight: 1.5 }}>
-                                        {c.texto}
-                                    </p>
+                                    <p style={{ margin: 0, fontSize: 14, color: "#333", lineHeight: 1.5 }}>{c.texto}</p>
                                 </div>
                             ))}
                         </div>

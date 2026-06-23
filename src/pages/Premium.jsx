@@ -23,6 +23,8 @@ const Premium = () => {
                     <div className="payment-section">
                         <h2>Activa Premium ahora</h2>
 
+                        <p className="precio-premium">$5.000 <span>COP / mes</span></p>
+
                         <p>Escanea el código QR para realizar el pago:</p>
 
                         <div className="qr-container">

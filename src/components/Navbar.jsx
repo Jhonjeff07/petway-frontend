@@ -28,11 +28,9 @@ function Navbar({ isAuth, setIsAuth }) {
       <div className="nav-left">
         <img src="/Logo.png" alt="Logo PetWay" className="nav-logo" />
       </div>
-
       <div className="nav-center">
         <span className="nav-title">🐾 PetWay</span>
       </div>
-
       <button
         className="nav-toggle"
         aria-label="Abrir menú"
@@ -40,10 +38,18 @@ function Navbar({ isAuth, setIsAuth }) {
       >
         ☰
       </button>
-
       <div className={`nav-right ${menuOpen ? "open" : ""}`}>
         <Link to="/" onClick={() => setMenuOpen(false)}>Inicio</Link>
         <Link to="/buscar" onClick={() => setMenuOpen(false)}>Buscar</Link>
+
+        {/* Botón Hazte Premium - Visible para todos */}
+        <Link
+          to="/premium"
+          onClick={() => setMenuOpen(false)}
+          className="nav-premium-btn"
+        >
+          ✨ Hazte Premium
+        </Link>
 
         {isAuth ? (
           <>

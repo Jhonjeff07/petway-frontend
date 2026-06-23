@@ -557,7 +557,7 @@ form button:hover {
 }
 
 /* Controles extra: centrar y hacer los botones separados en móvil */
-.detalle-mascota-info > div[style*="display: flex"] {
+.detalle-mascota-info>div[style*="display: flex"] {
   flex-direction: column;
 }
 
@@ -565,8 +565,9 @@ form button:hover {
 .leaflet-container {
   border-radius: 8px;
   width: 100% !important;
-  height: 280px !important; /* altura móvil por defecto */
-  box-shadow: 0 8px 20px rgba(2,46,91,0.06);
+  height: 280px !important;
+  /* altura móvil por defecto */
+  box-shadow: 0 8px 20px rgba(2, 46, 91, 0.06);
 }
 
 /* Indoor popup font ajustado */
@@ -640,11 +641,13 @@ form button:hover {
   font-weight: 600;
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
+
 .detalle-mascota-info button:active {
   transform: translateY(1px);
 }
+
 .detalle-mascota-info button:focus {
-  outline: 3px solid rgba(2,119,182,0.18);
+  outline: 3px solid rgba(2, 119, 182, 0.18);
   outline-offset: 2px;
 }
 
@@ -660,5 +663,36 @@ form button:hover {
 
   .form-page-title {
     font-size: 1.15rem;
+  }
+}
+
+/* ==================== BOTÓN PREMIUM ==================== */
+.nav-premium-btn {
+  background: linear-gradient(135deg, #ffd700, #ffaa00);
+  color: #023e8a !important;
+  padding: 8px 18px;
+  border-radius: 30px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.nav-premium-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 16px rgba(255, 215, 0, 0.5);
+  background: linear-gradient(135deg, #ffed4e, #ffb300);
+}
+
+/* En móvil (dentro del menú desplegable) */
+@media (max-width: 768px) {
+  .nav-premium-btn {
+    background: #ffd700;
+    justify-content: center;
+    margin: 8px 0;
   }
 }

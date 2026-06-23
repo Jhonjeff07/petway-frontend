@@ -48,7 +48,7 @@ function Navbar({ isAuth, setIsAuth }) {
           onClick={() => setMenuOpen(false)}
           className="nav-premium-btn"
         >
-          ✨ Hazte Premium
+          Hazte Premium
         </Link>
 
         {isAuth ? (

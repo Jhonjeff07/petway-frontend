@@ -14,7 +14,7 @@ const Premium = () => {
                         <ul>
                             <li>✅ Reporte destacado en el mapa principal</li>
                             <li>✅ Mayor visibilidad en búsquedas</li>
-                            <li>✅ Notificaciones prioritarias</li>
+                            <li>✅ Comenta en publicaciones de otros usuarios</li>
                             <li>✅ Tu mascota aparece primero</li>
                             <li>✅ Soporte preferente</li>
                         </ul>

@@ -14,6 +14,8 @@ import VerificarPregunta from './pages/VerificarPregunta';
 import CambiarPassword from './pages/CambiarPassword';
 import VerificarEmail from './pages/VerificarEmail';
 import MisMascotas from './pages/MisMascotas';
+import Premium from "./pages/Premium";           // ← Nueva importación
+
 import "./App.css";
 
 function App() {
@@ -40,6 +42,9 @@ function App() {
           <Route path="/mascota/:id" element={<DetalleMascota />} />
           <Route path="/verificar-email" element={<VerificarEmail />} />
           <Route path="/mis-mascotas" element={isAuth ? <MisMascotas /> : <Navigate to="/login" />} />
+
+          {/* Nueva ruta Premium (pública) */}
+          <Route path="/premium" element={<Premium />} />
         </Routes>
       </div>
       <Footer />
